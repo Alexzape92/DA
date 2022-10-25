@@ -19,10 +19,37 @@ RAND_TYPE SimpleRandomGenerator::a;
 
 using namespace Asedio;
 
-float cellValue(int row, int col, bool** freeCells, int nCellsWidth, int nCellsHeight
-	, float mapWidth, float mapHeight, List<Object*> obstacles, List<Defense*> defenses) {
-	return 0; //Esta es la que asigna valor para el centro de extraccion, crear otra para el resto
-}
+typedef struct tipoCelda{
+    Vector3 position;
+    float value;
+
+    tipoCelda(Vector3 V, float v): position{V}, value{v} {}
+};
+
+
+float cellValue0(int row, int col, int nCellsWidth, int nCellsHeight) {
+	int r = std::min(std::abs(row - (nCellsHeight-1)), row);
+    int c = std::min(std::abs(col - (nCellsWidth-1)), col);
+    return r + c;   //Las esquinas tendrán máximo valor (0), y el centro el mínimo 
+}   //Esta es la que asigna valor para el centro de extraccion, crear otra para el resto
+
+const List<tipoCelda>& getList(int nCellsWidth, int nCellsHeight, float mapWidth, float mapHeight){
+    float cellWidth = mapWidth / nCellsWidth;
+    float cellHeight = mapHeight / nCellsHeight;
+    List<tipoCelda> L;
+    for(int r = 0; r < nCellsHeight; r++){
+        for(int c = 0; c < nCellsWidth; c++){
+            float val = cellValue0(r, c, nCellsWidth, nCellsHeight);
+            Vector3 v(c * cellWidth + cellWidth / 2, r * cellHeight + cellHeight / 2, 0); 
+            tipoCelda cell(v, val);
+            if(L.empty())
+                L.push_front(cell);
+            else{
+                
+            }
+        }
+    }
+} 
 
 bool factible(int row, int col, bool** freeCells, int nCellsWidth, int nCellsHeight
 	, float mapWidth, float mapHeight, List<Object*> obstacles, List<Defense*>::iterator def, List<Defense*> defenses){
@@ -32,13 +59,19 @@ bool factible(int row, int col, bool** freeCells, int nCellsWidth, int nCellsHei
     if(row < 0 || col < 0 || row >= nCellsHeight || col >= nCellsWidth || !freeCells[row][col])
         res = false;
     else{
+        Vector3 v(col * cellWidth + cellWidth / 2, row * cellHeight + cellHeight / 2, 0);   //Posición de nuestra nueva defensa
         auto d = defenses.begin();
         while(d != def && res){  //Las defensas se isertan desde 0 de una en una, por lo que las siguientes a i no estan colocadas
-            Vector3 v(col * cellWidth + cellWidth / 2, row * cellHeight + cellHeight / 2, 0);
             if(corta((*d)->position, v, (*d)->radio, (*def)->radio)) 
                 res = false;
         }
+        auto o = obstacles.begin();
+        while(res && o != obstacles.end()){
+            if(corta((*o)->position, v, (*o)->radio, (*def)->radio))
+                res = false;
+        }
     }
+    return res;
 }
 
 void DEF_LIB_EXPORTED placeDefenses(bool** freeCells, int nCellsWidth, int nCellsHeight, float mapWidth, float mapHeight
