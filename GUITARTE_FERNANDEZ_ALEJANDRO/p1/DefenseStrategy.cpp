@@ -19,13 +19,22 @@ RAND_TYPE SimpleRandomGenerator::a;
 
 using namespace Asedio;
 
-typedef struct tipoCelda{
+struct tipoCelda{
     Vector3 position;
     int row, col;
     float value;
 
     tipoCelda(Vector3 V, int r, int c, float v): position{V}, row{r}, col{c}, value{v} {}
 };
+
+//FUNCIONES PRIVADAS
+bool corta(Vector3 pos1, Vector3 pos2, float r1, float r2);
+Vector3 centro(int col, int row, float cellWidth, float cellHeight);
+float distancia(Vector3 p1, Vector3 p2);
+
+bool corta(Vector3 pos1, Vector3 pos2, float r1, float r2){
+    return r1 + r2 > distancia(pos1, pos2);
+}
 
 Vector3 centro(int col, int row, float cellWidth, float cellHeight){
     return Vector3(col * cellWidth + cellWidth / 2, row * cellHeight + cellHeight/2, 0);
@@ -57,7 +66,7 @@ List<tipoCelda> getList0(int nCellsWidth, int nCellsHeight, float mapWidth, floa
                 L.push_front(cell);
             else{
                 auto p = L.begin();
-                while(p != L.end() && p->value > cell.value){
+                while(p != L.end() && p->value < cell.value){
                     p++;
                 }
                 L.insert(p, cell);
@@ -79,7 +88,7 @@ List<tipoCelda> getListRest(int nCellsWidth, int nCellsHeight, float mapWidth, f
                 L.push_front(cell);
             else{
                 auto p = L.begin();
-                while(p != L.end() && p->value > cell.value){
+                while(p != L.end() && p->value < cell.value){
                     p++;
                 }
                 L.insert(p, cell);
@@ -99,14 +108,16 @@ bool factible(int row, int col, bool** freeCells, int nCellsWidth, int nCellsHei
     else{
         Vector3 v = centro(col, row, cellWidth, cellHeight);   //Posición de nuestra nueva defensa
         auto d = defenses.begin();
-        while(d != def && res){  //Las defensas se isertan desde 0 de una en una, por lo que las siguientes a i no estan colocadas
+        while(d != defenses.end() && res){  //Las defensas se isertan desde 0 de una en una, por lo que las siguientes a i no estan colocadas
             if(corta((*d)->position, v, (*d)->radio, (*def)->radio)) 
                 res = false;
+            d++;
         }
         auto o = obstacles.begin();
         while(res && o != obstacles.end()){
             if(corta((*o)->position, v, (*o)->radio, (*def)->radio))
                 res = false;
+            o++;
         }
     }
     return res;
@@ -147,6 +158,7 @@ void DEF_LIB_EXPORTED placeDefenses(bool** freeCells, int nCellsWidth, int nCell
         }
 
         ++currentDefense;
+        maxAttemps--;
     }
 
 #ifdef PRINT_DEFENSE_STRATEGY
@@ -167,8 +179,4 @@ void DEF_LIB_EXPORTED placeDefenses(bool** freeCells, int nCellsWidth, int nCell
 	cellValues = NULL;
 
 #endif
-}
-
-bool corta(Vector3 pos1, Vector3 pos2, float r1, float r2){
-    return r1 + r2 > distancia(pos1, pos2);
 }
