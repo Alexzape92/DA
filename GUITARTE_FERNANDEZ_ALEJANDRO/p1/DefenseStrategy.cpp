@@ -8,6 +8,7 @@
 
 #include "../simulador/Asedio.h"
 #include "../simulador/Defense.h"
+#include <limits>
 
 #ifdef PRINT_DEFENSE_STRATEGY
 #include "ppm.h"
@@ -44,23 +45,28 @@ float distancia(Vector3 p1, Vector3 p2){
     return sqrtf(powf(p1.x - p2.x, 2) + powf(p1.y - p2.y, 2));
 }
 
-float cellValue0(int row, int col, int nCellsWidth, int nCellsHeight) {
-	int r = std::min(std::abs(row - (nCellsHeight-1)), row);
-    int c = std::min(std::abs(col - (nCellsWidth-1)), col);
-    return r + c;   //Las esquinas tendrán máximo valor (0), y el centro el mínimo 
+float cellValue0(int row, int col, float cellWidth, float cellHeight, List<Object*> obstacles) {
+    float min = std::numeric_limits<float>::max();
+	for(auto o = obstacles.begin(); o != obstacles.end(); o++){
+        float dist = distancia(centro(col, row, cellWidth, cellHeight), (*o)->position);
+        if(dist < min)
+            min = dist;
+    }
+
+    return min;   //Las esquinas tendrán máximo valor (0), y el centro el mínimo 
 }   //Esta es la que asigna valor para el centro de extraccion, crear otra para el resto
 
 float cellValueRest(int row, int col, Defense* c0 , float cellWidth, float cellHeight){
     return distancia(c0->position, centro(col, row, cellWidth, cellHeight));    //A menos distancia, mejor
 }
 
-List<tipoCelda> getList0(int nCellsWidth, int nCellsHeight, float mapWidth, float mapHeight){
+List<tipoCelda> getList0(int nCellsWidth, int nCellsHeight, float mapWidth, float mapHeight, List<Object*> obstacles){
     float cellWidth = mapWidth / nCellsWidth;
     float cellHeight = mapHeight / nCellsHeight;
     List<tipoCelda> L;
     for(int r = 0; r < nCellsHeight; r++){
         for(int c = 0; c < nCellsWidth; c++){
-            float val = cellValue0(r, c, nCellsWidth, nCellsHeight);
+            float val = cellValue0(r, c, cellWidth, cellHeight, obstacles);
             tipoCelda cell(centro(c, r, cellWidth, cellHeight), r, c, val);
             if(L.empty())
                 L.push_front(cell);
@@ -105,6 +111,9 @@ bool factible(int row, int col, bool** freeCells, int nCellsWidth, int nCellsHei
     bool res = true;
     if(row < 0 || col < 0 || row >= nCellsHeight || col >= nCellsWidth || !freeCells[row][col])
         res = false;
+    Vector3 posi = centro(col, row, cellWidth, cellHeight);
+    if(posi.x - ((*def)->radio) < 0 || posi.x + ((*def)->radio) > mapWidth || posi.y - ((*def)->radio) < 0 || posi.y + ((*def)->radio) > mapHeight)
+        res = false;
     else{
         Vector3 v = centro(col, row, cellWidth, cellHeight);   //Posición de nuestra nueva defensa
         auto d = defenses.begin();
@@ -133,7 +142,7 @@ void DEF_LIB_EXPORTED placeDefenses(bool** freeCells, int nCellsWidth, int nCell
     List<Defense*>::iterator currentDefense = defenses.begin();
     while(currentDefense != defenses.end() && maxAttemps > 0) {
         if(currentDefense == defenses.begin()){ //Colocar centro de extracción --- Algoritmo devorador
-            List<tipoCelda> C = getList0(nCellsWidth, nCellsHeight, mapWidth, mapHeight);   //Conjunto de candidatos
+            List<tipoCelda> C = getList0(nCellsWidth, nCellsHeight, mapWidth, mapHeight, obstacles);   //Conjunto de candidatos
             bool solucionado = false;
             while(!solucionado && !C.empty()){
                 tipoCelda p = C.front();    //Como C está ordenado, la funcion de selección saca el elemnto en la primera posición
