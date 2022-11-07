@@ -45,15 +45,30 @@ float distancia(Vector3 p1, Vector3 p2){
     return sqrtf(powf(p1.x - p2.x, 2) + powf(p1.y - p2.y, 2));
 }
 
-float cellValue0(int row, int col, float cellWidth, float cellHeight, List<Object*> obstacles) {
-    float min = std::numeric_limits<float>::max();
+float cellValue0(int row, int col, float cellWidth, float cellHeight, int nCellsWidth, int nCellsHeight, List<Object*> obstacles) {
+    float mino = std::numeric_limits<float>::max(), mine = mino, diste;
 	for(auto o = obstacles.begin(); o != obstacles.end(); o++){
         float dist = distancia(centro(col, row, cellWidth, cellHeight), (*o)->position);
-        if(dist < min)
-            min = dist;
+        if(dist < mino)
+            mino = dist;
     }
 
-    return min;   //Las esquinas tendrán máximo valor (0), y el centro el mínimo 
+    mine = distancia(centro(0, 0, cellWidth, cellHeight), centro(col, row, cellWidth, cellHeight));
+
+    diste = distancia(centro(nCellsWidth - 1, 0, cellWidth, cellHeight), centro(col, row, cellWidth, cellHeight));
+    if(diste < mine)
+        mine = diste;
+    
+    diste = distancia(centro(0, nCellsHeight - 1, cellWidth, cellHeight), centro(col, row, cellWidth, cellHeight));
+    if(diste < mine)
+        mine = diste;
+
+    diste = distancia(centro(nCellsWidth - 1, nCellsHeight - 1, cellWidth, cellHeight), centro(col, row, cellWidth, cellHeight));
+    if(diste < mine)
+        mine = diste;
+    
+
+    return mino + mine;
 }   //Esta es la que asigna valor para el centro de extraccion, crear otra para el resto
 
 float cellValueRest(int row, int col, Defense* c0 , float cellWidth, float cellHeight){
@@ -66,7 +81,7 @@ List<tipoCelda> getList0(int nCellsWidth, int nCellsHeight, float mapWidth, floa
     List<tipoCelda> L;
     for(int r = 0; r < nCellsHeight; r++){
         for(int c = 0; c < nCellsWidth; c++){
-            float val = cellValue0(r, c, cellWidth, cellHeight, obstacles);
+            float val = cellValue0(r, c, cellWidth, cellHeight, nCellsWidth, nCellsHeight, obstacles);
             tipoCelda cell(centro(c, r, cellWidth, cellHeight), r, c, val);
             if(L.empty())
                 L.push_front(cell);
@@ -145,7 +160,7 @@ void DEF_LIB_EXPORTED placeDefenses(bool** freeCells, int nCellsWidth, int nCell
             List<tipoCelda> C = getList0(nCellsWidth, nCellsHeight, mapWidth, mapHeight, obstacles);   //Conjunto de candidatos
             bool solucionado = false;
             while(!solucionado && !C.empty()){
-                tipoCelda p = C.front();    //Como C está ordenado, la funcion de selección saca el elemnto en la primera posición
+                tipoCelda p = C.back();    //Como C está ordenado, la funcion de selección saca el elemnto en la última posición
                 C.pop_front();              //Y la sacamos de la lista de candidatos
                 if(factible(p.row, p.col, freeCells, nCellsWidth, nCellsHeight, mapWidth, mapHeight, obstacles, currentDefense, defenses)){
                     (*currentDefense)->position = p.position;   //Lo ponemos en la celda
