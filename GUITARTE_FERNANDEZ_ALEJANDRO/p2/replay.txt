@@ -1,0 +1,126 @@
+<game duration="0">
+ <map width="400" height="400" />
+ <obstacles> 
+  <obstacle id="0" radio="16,4781" x="383,57" y="126,268" z="0" />
+  <obstacle id="1" radio="23,8052" x="253,791" y="272,331" z="0" />
+  <obstacle id="2" radio="27,2683" x="227,673" y="351,947" z="0" />
+  <obstacle id="3" radio="16,9704" x="377,754" y="301,708" z="0" />
+  <obstacle id="4" radio="19,5061" x="24,5369" y="249,471" z="0" />
+  <obstacle id="5" radio="16,9576" x="367,929" y="213,409" z="0" />
+  <obstacle id="6" radio="20,7762" x="230,658" y="171,509" z="0" />
+  <obstacle id="7" radio="28,8494" x="288,617" y="30,3567" z="0" />
+  <obstacle id="8" radio="16,812" x="256,291" y="113,402" z="0" />
+  <obstacle id="9" radio="23,4154" x="336,651" y="41,3425" z="0" />
+  <obstacle id="10" radio="21,4065" x="329,562" y="241,969" z="0" />
+  <obstacle id="11" radio="22,1466" x="133,349" y="87,1625" z="0" />
+  <obstacle id="12" radio="17,4143" x="334,801" y="60,861" z="0" />
+  <obstacle id="13" radio="21,0868" x="87,2222" y="310,898" z="0" />
+  <obstacle id="14" radio="29,1659" x="152,615" y="34,42" z="0" />
+  <obstacle id="15" radio="21,3602" x="294,521" y="157,004" z="0" />
+  <obstacle id="16" radio="26,1924" x="170,424" y="185,331" z="0" />
+  <obstacle id="17" radio="26,5597" x="71,5678" y="170,467" z="0" />
+  <obstacle id="18" radio="23,3943" x="320,778" y="140,807" z="0" />
+  <obstacle id="19" radio="20,2788" x="232,396" y="112,423" z="0" />
+  <obstacle id="20" radio="19,1832" x="159,095" y="392,011" z="0" />
+  <obstacle id="21" radio="20,5444" x="54,6675" y="135,613" z="0" />
+  <obstacle id="22" radio="16,4451" x="358,27" y="118,07" z="0" />
+  <obstacle id="23" radio="27,8473" x="286,703" y="77,7684" z="0" />
+  <obstacle id="24" radio="15,3481" x="283,544" y="47,5659" z="0" />
+ </obstacles> 
+ <defenses> 
+  <defense id="1" type="0" radio="4,98829" range="29,1141" >
+    <key instant="0" x="315" y="95" z="0" /> 
+    <key instant="0" x="315" y="95" z="0" /> 
+  </defense>
+  <defense id="2" type="0" radio="4,98829" range="29,1141" >
+    <key instant="0" x="315" y="105" z="0" /> 
+    <key instant="0" x="315" y="105" z="0" /> 
+  </defense>
+  <defense id="3" type="0" radio="4,98829" range="29,1141" >
+    <key instant="0" x="325" y="95" z="0" /> 
+    <key instant="0" x="325" y="95" z="0" /> 
+  </defense>
+  <defense id="4" type="1" radio="4,63869" range="32,0418" >
+    <key instant="0" x="325" y="105" z="0" /> 
+    <key instant="0" x="325" y="105" z="0" /> 
+  </defense>
+  <defense id="5" type="1" radio="4,63869" range="32,0418" >
+    <key instant="0" x="305" y="105" z="0" /> 
+    <key instant="0" x="305" y="105" z="0" /> 
+  </defense>
+  <defense id="6" type="1" radio="4,63869" range="32,0418" >
+    <key instant="0" x="325" y="85" z="0" /> 
+    <key instant="0" x="325" y="85" z="0" /> 
+  </defense>
+  <defense id="7" type="1" radio="4,63869" range="32,0418" >
+    <key instant="0" x="335" y="95" z="0" /> 
+    <key instant="0" x="335" y="95" z="0" /> 
+  </defense>
+  <defense id="8" type="2" radio="4,63234" range="27,185" >
+    <key instant="0" x="305" y="115" z="0" /> 
+    <key instant="0" x="305" y="115" z="0" /> 
+  </defense>
+  <defense id="9" type="2" radio="4,63234" range="27,185" >
+    <key instant="0" x="335" y="105" z="0" /> 
+    <key instant="0" x="335" y="105" z="0" /> 
+  </defense>
+  <defense id="10" type="2" radio="4,63234" range="27,185" >
+    <key instant="0" x="335" y="85" z="0" /> 
+    <key instant="0" x="335" y="85" z="0" /> 
+  </defense>
+  <defense id="11" type="2" radio="4,63234" range="27,185" >
+    <key instant="0" x="335" y="115" z="0" /> 
+    <key instant="0" x="335" y="115" z="0" /> 
+  </defense>
+  <defense id="12" type="3" radio="5,40629" range="31,8745" >
+    <key instant="0" x="295" y="125" z="0" /> 
+    <key instant="0" x="295" y="125" z="0" /> 
+  </defense>
+  <defense id="13" type="3" radio="5,40629" range="31,8745" >
+    <key instant="0" x="285" y="115" z="0" /> 
+    <key instant="0" x="285" y="115" z="0" /> 
+  </defense>
+  <defense id="14" type="3" radio="5,40629" range="31,8745" >
+    <key instant="0" x="355" y="95" z="0" /> 
+    <key instant="0" x="355" y="95" z="0" /> 
+  </defense>
+  <defense id="15" type="3" radio="5,40629" range="31,8745" >
+    <key instant="0" x="355" y="75" z="0" /> 
+    <key instant="0" x="355" y="75" z="0" /> 
+  </defense>
+  <defense id="16" type="4" radio="5,44934" range="30,1247" >
+    <key instant="0" x="275" y="135" z="0" /> 
+    <key instant="0" x="275" y="135" z="0" /> 
+  </defense>
+  <defense id="17" type="4" radio="5,44934" range="30,1247" >
+    <key instant="0" x="355" y="145" z="0" /> 
+    <key instant="0" x="355" y="145" z="0" /> 
+  </defense>
+  <defense id="18" type="4" radio="5,44934" range="30,1247" >
+    <key instant="0" x="255" y="65" z="0" /> 
+    <key instant="0" x="255" y="65" z="0" /> 
+  </defense>
+  <defense id="20" type="5" radio="5,48085" range="30,4524" >
+    <key instant="0" x="245" y="85" z="0" /> 
+    <key instant="0" x="245" y="85" z="0" /> 
+  </defense>
+  <defense id="21" type="5" radio="5,48085" range="30,4524" >
+    <key instant="0" x="265" y="145" z="0" /> 
+    <key instant="0" x="265" y="145" z="0" /> 
+  </defense>
+  <defense id="22" type="5" radio="5,48085" range="30,4524" >
+    <key instant="0" x="345" y="165" z="0" /> 
+    <key instant="0" x="345" y="165" z="0" /> 
+  </defense>
+  <defense id="23" type="5" radio="5,48085" range="30,4524" >
+    <key instant="0" x="255" y="45" z="0" /> 
+    <key instant="0" x="255" y="45" z="0" /> 
+  </defense>
+  <defense id="24" type="6" radio="4,57588" range="31,3478" >
+    <key instant="0" x="315" y="175" z="0" /> 
+    <key instant="0" x="315" y="175" z="0" /> 
+  </defense>
+ </defenses> 
+ <units> 
+ </units> 
+</game>
