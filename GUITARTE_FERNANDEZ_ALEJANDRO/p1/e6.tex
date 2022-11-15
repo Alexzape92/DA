@@ -1,13 +1,32 @@
 \begin{lstlisting}
-// sustituya este codigo por su respuesta
-void placeDefenses(...) {
+void DEF_LIB_EXPORTED placeDefenses(bool** freeCells, int nCellsWidth, int nCellsHeight, float mapWidth, float mapHeight
+              , std::list<Object*> obstacles, std::list<Defense*> defenses) {
 
+    float cellWidth = mapWidth / nCellsWidth;
+    float cellHeight = mapHeight / nCellsHeight;
+
+    int maxAttemps = 1000;
     List<Defense*>::iterator currentDefense = defenses.begin();
     while(currentDefense != defenses.end() && maxAttemps > 0) {
+        if(currentDefense == defenses.begin()){ //Colocar centro de extraccion --- Algoritmo devorador
+            //Ejercicio 3
+        }
+        else{   //Colocar el resto de defensas --- Algoritmo devorador
+            List<tipoCelda> C = getListRest(nCellsWidth, nCellsHeight, mapWidth, mapHeight, *(defenses.begin()));   //Conjunto de candidatos
+            bool solucionado = false;
+            while(!solucionado && !C.empty()){
+                tipoCelda p = C.front();    //Como C esto ordenado de menor a mayor distancia, la funcion de seleccion saca el elemnto en la primera posicion
+                C.pop_front();              //Y la sacamos de la lista de candidatos
+                if(factible(p.row, p.col, freeCells, nCellsWidth, nCellsHeight, mapWidth, mapHeight, obstacles, currentDefense, defenses)){
+                    (*currentDefense)->position = p.position;   //Lo ponemos en la celda
+                    freeCells[p.row][p.col] = false;
+                    solucionado = true; //Problema solucionado
+                }
+            }
+        }
 
-        (*currentDefense)->position.x = ((int)(_RAND2(nCellsWidth))) * cellWidth + cellWidth * 0.5f;
-        ...
         ++currentDefense;
+        maxAttemps--;
     }
 }
 \end{lstlisting}

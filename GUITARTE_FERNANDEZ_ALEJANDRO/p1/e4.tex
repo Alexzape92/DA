@@ -1,1 +1,4 @@
-Escriba aquí su respuesta al ejercicio 4.
+El algoritmo devorador empieza después del primer if (detecta que la defensa 0 debe seguir el algoritmo del centro de extracción). \\
+Vemos que cumple todas las características de un algoritmo voraz. Por un lado, tenemos un conjunto de candidatos (lista de todas las celdas puntuadas con la funcion cellValue) que vamos recorriendo en un bucle hasta que lleguemos a la solución (hemos colocado el centro, caso en el cual cambiamos la flag \emph{solucionado} a verdadero), o nos quedemos sin candidatos (celdas).\\
+Como vemos, contamos con una función de selección (sacar el último elemento de la lista, ya que esta está ordenada) que obtiene el mejor candidato posible, y a continuación se saca del conjunto de candidatos C.\\
+Por último, existe una función de factibilidad que devuelve si se puede colocar la mina en la celda devuelta por la función de selección, y si es así, se coloca.
