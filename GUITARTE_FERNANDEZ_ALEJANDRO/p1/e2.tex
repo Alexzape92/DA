@@ -1,3 +1,3 @@
-La función de factibilidad recibe la defensa a colocar más la fila y columna de la casilla a comprobar; así como las dimensiones del mapa, y listas de obstáculos y defensas. También recibe una matriz de tipo bool que representa si una casilla está disponible o no (ligera optimización).
+La función de factibilidad recibe la defensa a colocar más la celda y columna de la casilla a comprobar; así como las dimensiones del mapa, y listas de obstáculos y defensas.
 
 Así comprueba en primer lugar que la casilla esté dentro del mapa, sin salirse por los bordes, y luego que al colocar la defensa en esa casilla, no se salga del mapa por ser demasiado grande. Por último, recorre las listas de obstáculos y defensas y comprueba que no se produzcan colisiones en caso de insertar la defensa en la cela indicada.

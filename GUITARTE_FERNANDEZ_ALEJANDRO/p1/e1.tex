@@ -1,9 +1,8 @@
-En mi caso, la función asigna valores en función de la distancia al obstáculo más cercano, añadiendo (sumándole) una "penalización" equivalente a la distancia a la esquina del mapa más cercano. De esta manera, cuanto menor sea la distancia al obstáculo más cercano y menor sea la distancia a la esquina más cercana, menor será valor. La función de selección eligirá la celda con mayor valor, de manera que situemos el centro de extracción en un sitio alejado de las esquinas y de los obstáculos, donde podamos construir un "anillo" de defensas que rodee al centro de extracción. \\
+En mi caso, la función asigna valores en función de la distancia al obstáculo más cercano. De esta manera, el centro de extracción quedará ubicado junto a un obstáculo, por lo que necesitaremos menos defensas para "rodear" la mina. \\
 
 Los parámetros que recibe son: \\
 	- Fila y columna de la celda a valorar.\\
-	- Tamaño de las celdas, para valorar las distancias.\\
-	- Número de celdas a lo ancho y a lo alto, para las esquinas.\\
+	- Tamaño de las celdas, para valorar las distancias.s\\
 	- Lista de obstáculos.\\
 
 % Elimine los símbolos de tanto por ciento para descomentar las siguientes instrucciones e incluir una imagen en su respuesta. La mejor ubicación de la imagen será determinada por el compilador de Latex. No tiene por qué situarse a continuación en el fichero en formato pdf resultante.
