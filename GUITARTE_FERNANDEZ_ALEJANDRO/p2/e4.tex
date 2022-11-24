@@ -1,15 +1,16 @@
 \begin{lstlisting}
-// sustituya este codigo por su respuesta
-void selectDefenses(...) {
+void recuperar(float** mat, std::list<int>& resultado, int n, int c, const std::list<Defense*>& defenses){
+    int i = n-1, j = c;
 
-    unsigned int cost = 0;
-    std::list<Defense*>::iterator it = defenses.begin();
-    while(it != defenses.end()) {
-        if(cost + (*it)->cost <= ases) {
-            selectedIDs.push_back((*it)->id);
-            cost += (*it)->cost;
+    while(i != 0){
+        if(mat[i][j] != mat[i-1][j]){
+            resultado.push_front(defensa(i, defenses)->id);
+            j -= defensa(i,defenses)->cost;
         }
-        ++it;
+        i--;
     }
+    
+    if(j >= (*defenses.begin())->cost)
+        resultado.push_front((*defenses.begin())->id);
 }
 \end{lstlisting}

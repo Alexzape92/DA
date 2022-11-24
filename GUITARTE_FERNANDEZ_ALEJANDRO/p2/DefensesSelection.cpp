@@ -11,7 +11,7 @@
 using namespace Asedio;
 
 float value(Defense* def){
-    return def->damage/def->attacksPerSecond + 0*def->dispersion + 0.6*def->health + 0.1*def->range;
+    return def->damage/def->attacksPerSecond + 0.6*def->health + 0.1*def->range;
 }
 
 int indice(std::list<Defense*>::const_iterator i, const std::list<Defense*>& defs){

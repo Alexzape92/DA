@@ -1,15 +1,23 @@
 \begin{lstlisting}
-// sustituya este codigo por su respuesta
-void selectDefenses(...) {
+void matriz(float** mat, unsigned int c, const std::list<Defense*>& defenses){
+    int n = defenses.size();
+    auto i = defenses.begin();
 
-    unsigned int cost = 0;
-    std::list<Defense*>::iterator it = defenses.begin();
-    while(it != defenses.end()) {
-        if(cost + (*it)->cost <= ases) {
-            selectedIDs.push_back((*it)->id);
-            cost += (*it)->cost;
+    for(int j = 0; j <= c; j++){
+        if(j < (*i)->cost)
+            mat[0][j] = 0;
+        else
+            mat[0][j] = value(*i);
+    }
+
+    for(++i; i != defenses.end(); i++){
+        for(int j = 0; j <= c; j++){
+            if(j < (*i)->cost)
+                mat[indice(i, defenses)][j] = mat[indice(i, defenses)-1][j];
+            else
+                mat[indice(i, defenses)][j] = 
+                std::max(mat[indice(i, defenses)-1][j], mat[indice(i, defenses)-1][j-(*i)->cost] + value(*i));
         }
-        ++it;
     }
 }
 \end{lstlisting}
