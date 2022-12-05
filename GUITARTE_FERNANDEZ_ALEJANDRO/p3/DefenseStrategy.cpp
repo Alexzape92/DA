@@ -10,7 +10,7 @@
 #include "../simulador/Defense.h"
 #include "cronometro.h"
 
-using namespace Asedio;  
+using namespace Asedio;
 
 struct tipoCelda{
     Vector3 position;
@@ -69,6 +69,65 @@ List<tipoCelda> getList(int nCellsWidth, int nCellsHeight, bool** freecells , fl
     return L;
 }
 
+void fusion(std::vector<tipoCelda>& L, int i, int k, int j){
+    int n = j-i+1, p = i, q = k+1;
+    std::vector<tipoCelda> w;
+    for(int l = 0; l < n; l++){
+        if(p <= k && (q > j || L[p].value <= L[q].value)){
+            w[p] = L[p];
+            p++;
+        }
+        else{
+            w[q] = L[q];
+            q++;
+        }
+    }
+    for(int l = 0; l < n; l++)
+        L[i + l] = w[l];
+}
+
+void OrdenaFusion(std::vector<tipoCelda>& L, int i, int j){
+    int n = j-i + 1;
+    if(n <= 3){
+        //ORDENACION POR INSERCION
+        for(int k = i; k <= j; k++){
+            bool terminado = false;
+            for(int l = i; l <= j && !terminado; l++){
+                if(L[k].value < L[l].value){
+                    tipoCelda aux = L[l];
+                    L[l] = L[k];
+                    L[k] = aux;
+                    terminado = true;
+                }
+            }
+        }
+    }
+    else{
+        int k = i + n/2;
+        OrdenaFusion(L, i, k);
+        OrdenaFusion(L, k+1, j);
+        fusion(L, i, k, j);
+    }
+}
+
+std::vector<tipoCelda> getListFusion(int nCellsWidth, int nCellsHeight, bool** freecells , float mapWidth, float mapHeight, List<Object*> obstacles, List<Defense*> defenses){
+    float cellWidth = mapWidth / nCellsWidth;
+    float cellHeight = mapHeight / nCellsHeight;
+    std::vector<tipoCelda> L;
+    int i = 0;
+    for(int r = 0; r < nCellsHeight; r++){
+        for(int c = 0; c < nCellsWidth; c++){
+            float val = defaultCellValue(r, c, freecells, nCellsWidth, nCellsHeight, mapWidth, mapHeight, obstacles, defenses);
+            tipoCelda cell(cellCenterToPosition(r, c, cellWidth, cellHeight), r, c, val);
+            L[i] = cell; //Todo en desorden
+            i++;
+        }
+    }
+
+    OrdenaFusion(L, 0, L.size()-1);
+    return L;
+}
+
 bool factible(int row, int col, bool** freeCells, int nCellsWidth, int nCellsHeight
 	, float mapWidth, float mapHeight, List<Object*> obstacles, List<Defense*>::iterator def, List<Defense*> defenses){
     float cellWidth = mapWidth / nCellsWidth;
@@ -117,6 +176,28 @@ void algoritmoVorazSinOrdenar(int nCellsWidth, int nCellsHeight, bool** freeCell
     }
 }
 
+void algoritmoVorazFusion(int nCellsWidth, int nCellsHeight, bool** freeCells , float mapWidth, float mapHeight, const List<Object*> obstacles, List<Defense*> defenses){
+    float cellWidth = mapWidth / nCellsWidth;
+    float cellHeight = mapHeight / nCellsHeight;
+
+    List<Defense*>::iterator currentDefense = defenses.begin();
+    while(currentDefense != defenses.end()) {
+        std::vector<tipoCelda> C = getListFusion(nCellsWidth, nCellsHeight, freeCells, mapWidth, mapHeight, obstacles, defenses);   //Conjunto de candidatos
+        bool solucionado = false;
+        int i = C.size() - 1;
+        while(!solucionado && !C.empty()){
+            tipoCelda p = C[i];
+            i--;
+            if(factible(p.row, p.col, freeCells, nCellsWidth, nCellsHeight, mapWidth, mapHeight, obstacles, currentDefense, defenses)){
+                (*currentDefense)->position = p.position;   //Lo ponemos en la celda
+                freeCells[p.row][p.col] = false;
+                solucionado = true; //Problema solucionado
+            }
+        }
+        currentDefense++;
+    }
+}
+
 void DEF_LIB_EXPORTED placeDefenses3(bool** freeCells, int nCellsWidth, int nCellsHeight, float mapWidth, float mapHeight
               , List<Object*> obstacles, List<Defense*> defenses) {
 
@@ -133,6 +214,16 @@ void DEF_LIB_EXPORTED placeDefenses3(bool** freeCells, int nCellsWidth, int nCel
 		++r;
     } while(c.tiempo() < e_abs/e_rel + e_abs);
     c.parar();
+    double t1 = c.tiempo() / r;
 
-    std::cout << (nCellsWidth * nCellsHeight) << '\t' << c.tiempo() / r << std::endl;
+    c.activar();
+    do {
+		algoritmoVorazFusion(nCellsWidth, nCellsHeight, freeCells, mapWidth, mapHeight, obstacles, defenses);
+		
+		++r;
+    } while(c.tiempo() < e_abs/e_rel + e_abs);
+    c.parar();
+    double t2 = c.tiempo() / r;
+
+    std::cout << (nCellsWidth * nCellsHeight) << '\t' << t1 << '\t' << t2 << std::endl;
 }
