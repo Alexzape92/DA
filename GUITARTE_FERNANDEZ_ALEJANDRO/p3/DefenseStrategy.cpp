@@ -17,7 +17,7 @@ struct tipoCelda{
     int row, col;
     float value;
 
-    tipoCelda(Vector3 V, int r, int c, float v): position{V}, row{r}, col{c}, value{v} {}
+    tipoCelda(Vector3 V = Vector3(), int r = 0, int c = 0, float v = 0): position{V}, row{r}, col{c}, value{v} {}
 };
 
 bool corta(Vector3 pos1, Vector3 pos2, float r1, float r2);
@@ -72,13 +72,14 @@ List<tipoCelda> getList(int nCellsWidth, int nCellsHeight, bool** freecells , fl
 void fusion(std::vector<tipoCelda>& L, int i, int k, int j){
     int n = j-i+1, p = i, q = k+1;
     std::vector<tipoCelda> w;
+    w.reserve(L.size());
     for(int l = 0; l < n; l++){
         if(p <= k && (q > j || L[p].value <= L[q].value)){
-            w[p] = L[p];
+            w[l] = L[p];
             p++;
         }
         else{
-            w[q] = L[q];
+            w[l] = L[q];
             q++;
         }
     }
@@ -89,17 +90,16 @@ void fusion(std::vector<tipoCelda>& L, int i, int k, int j){
 void OrdenaFusion(std::vector<tipoCelda>& L, int i, int j){
     int n = j-i + 1;
     if(n <= 3){
+
         //ORDENACION POR INSERCION
         for(int k = i; k <= j; k++){
-            bool terminado = false;
-            for(int l = i; l <= j && !terminado; l++){
-                if(L[k].value < L[l].value){
-                    tipoCelda aux = L[l];
-                    L[l] = L[k];
-                    L[k] = aux;
-                    terminado = true;
-                }
+            int pos = k;
+            tipoCelda aux = L[k];
+            while(pos > 0 && L[pos-1].value > aux.value){
+                L[pos] = L[pos-1];
+                pos--;
             }
+            L[pos] = aux;
         }
     }
     else{
@@ -114,13 +114,11 @@ std::vector<tipoCelda> getListFusion(int nCellsWidth, int nCellsHeight, bool** f
     float cellWidth = mapWidth / nCellsWidth;
     float cellHeight = mapHeight / nCellsHeight;
     std::vector<tipoCelda> L;
-    int i = 0;
     for(int r = 0; r < nCellsHeight; r++){
         for(int c = 0; c < nCellsWidth; c++){
             float val = defaultCellValue(r, c, freecells, nCellsWidth, nCellsHeight, mapWidth, mapHeight, obstacles, defenses);
             tipoCelda cell(cellCenterToPosition(r, c, cellWidth, cellHeight), r, c, val);
-            L[i] = cell; //Todo en desorden
-            i++;
+            L.push_back(cell); //Todo en desorden
         }
     }
 
@@ -184,10 +182,9 @@ void algoritmoVorazFusion(int nCellsWidth, int nCellsHeight, bool** freeCells , 
     while(currentDefense != defenses.end()) {
         std::vector<tipoCelda> C = getListFusion(nCellsWidth, nCellsHeight, freeCells, mapWidth, mapHeight, obstacles, defenses);   //Conjunto de candidatos
         bool solucionado = false;
-        int i = C.size() - 1;
         while(!solucionado && !C.empty()){
-            tipoCelda p = C[i];
-            i--;
+            tipoCelda p = C.back();
+            C.pop_back();
             if(factible(p.row, p.col, freeCells, nCellsWidth, nCellsHeight, mapWidth, mapHeight, obstacles, currentDefense, defenses)){
                 (*currentDefense)->position = p.position;   //Lo ponemos en la celda
                 freeCells[p.row][p.col] = false;
