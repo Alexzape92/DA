@@ -6,19 +6,9 @@
 
 #define BUILDING_DEF_STRATEGY_LIB 1
 
-#include "../simulador/Asedio.h"
-#include "../simulador/Defense.h"
 #include "cronometro.h"
+#include "DefenseStrategy.hpp"
 
-using namespace Asedio;
-
-struct tipoCelda{
-    Vector3 position;
-    int row, col;
-    float value;
-
-    tipoCelda(Vector3 V = Vector3(), int r = 0, int c = 0, float v = 0): position{V}, row{r}, col{c}, value{v} {}
-};
 bool operator < (const tipoCelda& c1, const tipoCelda& c2){
     return c1.value < c2.value;
 }
@@ -77,6 +67,133 @@ bool factible(int row, int col, bool** freeCells, int nCellsWidth, int nCellsHei
     return res;
 }
 
+//---------------------------------------------------------------------------------------------------
+//ALGORITMO SIN ORDENAR
+////---------------------------------------------------------------------------------------------------
+
+List<tipoCelda> getList(int nCellsWidth, int nCellsHeight, bool** freecells , float mapWidth, float mapHeight, List<Object*> obstacles, List<Defense*> defenses){
+    float cellWidth = mapWidth / nCellsWidth;
+    float cellHeight = mapHeight / nCellsHeight;
+    List<tipoCelda> L;
+    for(int r = 0; r < nCellsHeight; r++){
+        for(int c = 0; c < nCellsWidth; c++){
+            float val = defaultCellValue(r, c, freecells, nCellsWidth, nCellsHeight, mapWidth, mapHeight, obstacles, defenses);
+            tipoCelda cell(cellCenterToPosition(r, c, cellWidth, cellHeight), r, c, val);
+            if(L.empty())
+                L.push_front(cell);
+            else{
+                auto p = L.begin();
+                while(p != L.end() && p->value < cell.value){
+                    p++;
+                }
+                L.insert(p, cell);
+            }
+        }
+    }
+    return L;
+}
+
+void algoritmoVorazSinOrdenar(int nCellsWidth, int nCellsHeight, bool** freeCells , float mapWidth, float mapHeight, const List<Object*> obstacles, List<Defense*> defenses){
+    float cellWidth = mapWidth / nCellsWidth;
+    float cellHeight = mapHeight / nCellsHeight;
+
+    List<Defense*>::iterator currentDefense = defenses.begin();
+    while(currentDefense != defenses.end()) {
+        List<tipoCelda> C = getList(nCellsWidth, nCellsHeight, freeCells, mapWidth, mapHeight, obstacles, defenses);   //Conjunto de candidatos
+        bool solucionado = false;
+        while(!solucionado && !C.empty()){
+            tipoCelda p = C.back();    
+            C.pop_back();              
+            if(factible(p.row, p.col, freeCells, nCellsWidth, nCellsHeight, mapWidth, mapHeight, obstacles, currentDefense, defenses)){
+                (*currentDefense)->position = p.position;   //Lo ponemos en la celda
+                freeCells[p.row][p.col] = false;
+                solucionado = true; //Problema solucionado
+            }
+        }
+        currentDefense++;
+    }
+}
+
+//---------------------------------------------------------------------------------------------------
+//ORDENACION POR FUSION
+//---------------------------------------------------------------------------------------------------
+
+void fusion(std::vector<tipoCelda>& L, int i, int k, int j){
+    int n = j-i+1, p = i, q = k+1;
+    std::vector<tipoCelda> w;
+    w.reserve(L.size());
+    for(int l = 0; l < n; l++){
+        if(p <= k && (q > j || L[p].value <= L[q].value)){
+            w[l] = L[p];
+            p++;
+        }
+        else{
+            w[l] = L[q];
+            q++;
+        }
+    }
+    for(int l = 0; l < n; l++)
+        L[i + l] = w[l];
+}
+
+void OrdenaFusion(std::vector<tipoCelda>& L, int i, int j){
+    int n = j-i + 1;
+    if(n <= 3){
+        //ORDENACION POR INSERCION
+        for(int k = i; k <= j; k++){
+            int pos = k;
+            tipoCelda aux = L[k];
+            while(pos > 0 && L[pos-1].value > aux.value){
+                L[pos] = L[pos-1];
+                pos--;
+            }
+            L[pos] = aux;
+        }
+    }
+    else{
+        int k = i + n/2;
+        OrdenaFusion(L, i, k);
+        OrdenaFusion(L, k+1, j);
+        fusion(L, i, k, j);
+    }
+}
+
+std::vector<tipoCelda> getListFusion(int nCellsWidth, int nCellsHeight, bool** freecells , float mapWidth, float mapHeight, List<Object*> obstacles, List<Defense*> defenses){
+    float cellWidth = mapWidth / nCellsWidth;
+    float cellHeight = mapHeight / nCellsHeight;
+    std::vector<tipoCelda> L;
+    for(int r = 0; r < nCellsHeight; r++){
+        for(int c = 0; c < nCellsWidth; c++){
+            float val = defaultCellValue(r, c, freecells, nCellsWidth, nCellsHeight, mapWidth, mapHeight, obstacles, defenses);
+            tipoCelda cell(cellCenterToPosition(r, c, cellWidth, cellHeight), r, c, val);
+            L.push_back(cell); //Todo en desorden
+        }
+    }
+
+    OrdenaFusion(L, 0, L.size()-1);
+    return L;
+}
+
+void algoritmoVorazFusion(int nCellsWidth, int nCellsHeight, bool** freeCells , float mapWidth, float mapHeight, const List<Object*> obstacles, List<Defense*> defenses){
+    float cellWidth = mapWidth / nCellsWidth;
+    float cellHeight = mapHeight / nCellsHeight;
+
+    List<Defense*>::iterator currentDefense = defenses.begin();
+    while(currentDefense != defenses.end()) {
+        std::vector<tipoCelda> C = getListFusion(nCellsWidth, nCellsHeight, freeCells, mapWidth, mapHeight, obstacles, defenses);   //Conjunto de candidatos
+        bool solucionado = false;
+        while(!solucionado && !C.empty()){
+            tipoCelda p = C.back();
+            C.pop_back();
+            if(factible(p.row, p.col, freeCells, nCellsWidth, nCellsHeight, mapWidth, mapHeight, obstacles, currentDefense, defenses)){
+                (*currentDefense)->position = p.position;   //Lo ponemos en la celda
+                freeCells[p.row][p.col] = false;
+                solucionado = true; //Problema solucionado
+            }
+        }
+        currentDefense++;
+    }
+}
 
 //---------------------------------------------------------------------------------------------------
 //ORENACION RAPIDA
@@ -203,8 +320,54 @@ void algoritmoVorazMont(int nCellsWidth, int nCellsHeight, bool** freeCells , fl
 void DEF_LIB_EXPORTED placeDefenses3(bool** freeCells, int nCellsWidth, int nCellsHeight, float mapWidth, float mapHeight
               , List<Object*> obstacles, List<Defense*> defenses) {
 
-    if(nCellsHeight*nCellsWidth > 1000) //En los datos de la medición se ve que el montículo es mejor para n <= 1000, aproximadamente
-	    algoritmoVorazRapida(nCellsWidth, nCellsHeight, freeCells, mapWidth, mapHeight, obstacles, defenses);
-    else
-	    algoritmoVorazMont(nCellsWidth, nCellsHeight, freeCells, mapWidth, mapHeight, obstacles, defenses);
+    float cellWidth = mapWidth / nCellsWidth;
+    float cellHeight = mapHeight / nCellsHeight; 
+
+	cronometro c;
+    long int r = 0;
+    double e_abs = 0.01, e_rel = 0.001;
+
+    c.activar();
+    do {
+		algoritmoVorazSinOrdenar(nCellsWidth, nCellsHeight, freeCells, mapWidth, mapHeight, obstacles, defenses);
+		
+		++r;
+    } while(c.tiempo() < e_abs/e_rel + e_abs);
+    c.parar();
+    double t1 = c.tiempo() / r;
+
+    r = 0;
+    c.activar();
+    do {
+	    algoritmoVorazFusion(nCellsWidth, nCellsHeight, freeCells, mapWidth, mapHeight, obstacles, defenses);
+		
+		++r;
+    } while(c.tiempo() < e_abs/e_rel + e_abs);
+    c.parar();
+
+    double t2 = c.tiempo() / r;
+
+    r = 0;
+    c.activar();
+    do {
+		algoritmoVorazRapida(nCellsWidth, nCellsHeight, freeCells, mapWidth, mapHeight, obstacles, defenses);
+		
+		++r;
+    } while(c.tiempo() < e_abs/e_rel + e_abs);
+    c.parar();
+
+    double t3 = c.tiempo() / r;
+
+    r = 0;
+    c.activar();
+    do {
+		algoritmoVorazMont(nCellsWidth, nCellsHeight, freeCells, mapWidth, mapHeight, obstacles, defenses);
+
+		++r;
+    } while(c.tiempo() < e_abs/e_rel + e_abs);
+    c.parar();
+
+    double t4 = c.tiempo() / r;
+
+    std::cout << (nCellsWidth * nCellsHeight) << '\t' << t1 << '\t' << t2 << '\t' << t3 << '\t' << t4 << std::endl;
 }
