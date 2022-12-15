@@ -1,1 +1,39 @@
-Escriba aquí su respuesta al ejercicio 3.
+\begin{lstlisting}
+int pivote(std::vector<tipoCelda>& L, int i, int j){
+    int p = i;
+    tipoCelda x = L[i];
+    for(int k = i+1; k < j; k++){
+        if(L[k].value <= x.value){
+            p++;
+            tipoCelda aux = L[p];
+            L[p] = L[k];
+            L[k] = aux;
+        }
+    }
+    L[i] = L[p];
+    L[p] = x;
+
+    return p;
+}
+
+void OrdenaRapida(std::vector<tipoCelda>& L, int i, int j){
+    int n = j-i + 1;
+    if(n <= 3){
+        //ORDENACION POR INSERCION
+        for(int k = i; k <= j; k++){
+            int pos = k;
+            tipoCelda aux = L[k];
+            while(pos > 0 && L[pos-1].value > aux.value){
+                L[pos] = L[pos-1];
+                pos--;
+            }
+            L[pos] = aux;
+        }
+    }
+    else{
+        int p = pivote(L, i, j);
+        OrdenaRapida(L, i, p-1);
+        OrdenaRapida(L, p+1, j);
+    }
+}
+\end{lstlisting}

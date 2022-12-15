@@ -1,1 +1,41 @@
-Escriba aquí su respuesta al ejercicio 2.
+\begin{lstlisting}
+void fusion(std::vector<tipoCelda>& L, int i, int k, int j){
+    int n = j-i+1, p = i, q = k+1;
+    std::vector<tipoCelda> w;
+    w.reserve(L.size());
+    for(int l = 0; l < n; l++){
+        if(p <= k && (q > j || L[p].value <= L[q].value)){
+            w[l] = L[p];
+            p++;
+        }
+        else{
+            w[l] = L[q];
+            q++;
+        }
+    }
+    for(int l = 0; l < n; l++)
+        L[i + l] = w[l];
+}
+
+void OrdenaFusion(std::vector<tipoCelda>& L, int i, int j){
+    int n = j-i + 1;
+    if(n <= 3){
+        //ORDENACION POR INSERCION
+        for(int k = i; k <= j; k++){
+            int pos = k;
+            tipoCelda aux = L[k];
+            while(pos > 0 && L[pos-1].value > aux.value){
+                L[pos] = L[pos-1];
+                pos--;
+            }
+            L[pos] = aux;
+        }
+    }
+    else{
+        int k = i + n/2;
+        OrdenaFusion(L, i, k);
+        OrdenaFusion(L, k+1, j);
+        fusion(L, i, k, j);
+    }
+}
+\end{lstlisting}

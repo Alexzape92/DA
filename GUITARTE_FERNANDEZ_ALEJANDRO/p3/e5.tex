@@ -1,1 +1,5 @@
-Escriba aquí su respuesta al ejercicio 5.
+Para el caso primero, en el que no ordenamos las defensas, obtendremos que el $t(n_{defs}, n_{cells}) \in \mathcal{O}(n_{defs} \cdot n_{cells}^{2})$, ya que en el bucle más externo recorremos todas las defensas, para colocarlas, y dentro de éste calculamos la lista ($n_{cells}$ para recorrer todas las celdas y $n_{cells}$ de nuevo en el peor caso para insertarla en la lista de manera ordenada. Esto es porque los elemenos se insertan de manera ordenada crecientemente, de manera que la función de selección simplemente elegirá el último elemento.
+
+En el caso de la ordenación por fusión, el resultado será $t(n_{defs}, n_{cells}) \in \mathcal{O}(n_{defs} \cdot n_{cells} \cdot \log{n_{cells}})$. Se realiza el algorito de ordenación por fusión (complejidad $n \cdot \log{n}$ en el peor caso, y esto $n_{defs}$ veces.
+
+En el caso de la ordenación rápida, el resultado será $t(n_{defs}, n_{cells}) \in \mathcal{O}(n_{defs} \cdot n_{cells} \cdot \log{n_{cells}})$. Se realiza el algorito de ordenación rápida (complejidad $n \cdot \log{n}$ en el caso promedio, y esto $n_{defs}$ veces.
