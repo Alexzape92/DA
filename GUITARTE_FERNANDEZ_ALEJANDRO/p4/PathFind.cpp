@@ -121,7 +121,7 @@ void DEF_LIB_EXPORTED calculatePath(AStarNode* originNode, AStarNode* targetNode
                 }
             }
         }
-        maxIter--;
+        //maxIter--;
     }
 
 
